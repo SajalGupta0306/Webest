@@ -43,7 +43,7 @@ addNewParam.addEventListener("click", () => {
 			counter--;
 			if (counter == 0)
 				counter = 1;
-		})
+		});
 	}
 });
 
@@ -58,30 +58,31 @@ function getDomElementFromString(data) {
 var submitResp = document.getElementById("sendJsonResp");
 submitResp.addEventListener("click", () => {
 	//showing a dummy text to wait until response is fetched
-	document.getElementById("getJsonText").value = "Fetching response. Please wait..."
+	document.getElementById("getJsonText").value = "Fetching response. Please wait...";
 
 	// fetch the values entered by user
 	var urlValue = document.getElementById("inputURL").value;
 	var requestRadio = document.getElementsByName("requestType");
 	var requestRadioValue = "";
-	for (i = 0; i < requestRadio.length; i++) {
-		if (requestRadio[i].checked)
+	for (var i = 0; i < requestRadio.length; i++) {
+		if (requestRadio[i].checked) {
 			requestRadioValue = requestRadio[i].value;
+		}
 	}
 	var contentRadio = document.getElementsByName("contentType");
 	var contentRadioValue = "";
-	for (i = 0; i < contentRadio.length; i++) {
-		if (contentRadio[i].checked)
-			contentRadioValue = contentRadio[i].value;
+	for (var j = 0; j < contentRadio.length; j++) {
+		if (contentRadio[j].checked)
+			contentRadioValue = contentRadio[j].value;
 	}
 
 	// if user selects custom parar radio, collect the data in an obj
 	var userText = "";
 	if (contentRadioValue == "custom") {
-		var data = {};
-		for (var i = 1; i <= counter; i++) {
-			var key = document.getElementById("parameter" + i + "-key").value;
-			var value = document.getElementById("parameter" + i + "-value").value;
+		data = {};
+		for (var k = 1; k <= counter; k++) {
+			var key = document.getElementById("parameter" + k + "-key").value;
+			var value = document.getElementById("parameter" + k + "-value").value;
 			data[key] = value;
 		}
 		userText = JSON.stringify(data);
@@ -89,5 +90,40 @@ submitResp.addEventListener("click", () => {
 		userText = document.getElementById("jsonText").value;
 	}
 
-	console.log(userText);
-})
+	// console.log(userText);
+	console.log(contentRadioValue);
+	console.log(requestRadioValue);
+	console.log(urlValue);
+	// console.log(data);
+	if (requestRadioValue == "get") {
+		fetch(urlValue, {
+			method: "GET",
+		})
+			.then((resp) => resp.text())
+			.then((data) => {
+				// var jsonData = JSON.parse(data).results;
+				document.getElementById("getJsonText").value = data;
+				// console.log(json.results);
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+	} else {
+		fetch(urlValue, {
+			method: "POST",
+			body: userText,
+			headers: {
+				"Content-type": "application/json; charset=UTF-8"
+			}
+		})
+			.then((resp) => resp.text())
+			.then((data) => {
+				// var jsonData = JSON.parse(data).results;
+				document.getElementById("getJsonText").value = data;
+				// console.log(json.results);
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+	}
+});
